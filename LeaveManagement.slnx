@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="leavemanagement.client/leavemanagement.client.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="LeaveManagement.Server/LeaveManagement.Server.csproj" />
+</Solution>
