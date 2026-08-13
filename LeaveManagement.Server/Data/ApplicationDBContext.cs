@@ -28,6 +28,10 @@ public class ApplicationDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        // ==========================================
+        // RELATIONSHIPS
+        // ==========================================
+
         // Role -> Users
         modelBuilder.Entity<User>()
             .HasOne(u => u.Role)
@@ -84,6 +88,11 @@ public class ApplicationDbContext : DbContext
             .HasForeignKey(lr => lr.ApprovedBy)
             .OnDelete(DeleteBehavior.Restrict);
 
+
+        // ==========================================
+        // INDEXES
+        // ==========================================
+
         // Unique Email
         modelBuilder.Entity<User>()
             .HasIndex(u => u.Email)
@@ -98,5 +107,95 @@ public class ApplicationDbContext : DbContext
                 lb.Year
             })
             .IsUnique();
+
+
+        // ==========================================
+        // SEED ROLES
+        // ==========================================
+
+        modelBuilder.Entity<Role>().HasData(
+            new Role
+            {
+                RoleId = 1,
+                RoleName = "Project Manager"
+            },
+            new Role
+            {
+                RoleId = 2,
+                RoleName = "Application Developer"
+            },
+            new Role
+            {
+                RoleId = 3,
+                RoleName = "Software Engineer"
+            }
+        );
+
+
+        // ==========================================
+        // SEED DEPARTMENTS
+        // ==========================================
+
+        modelBuilder.Entity<Department>().HasData(
+            new Department
+            {
+                DepartmentId = 1,
+                DepartmentName = "Development"
+            },
+            new Department
+            {
+                DepartmentId = 2,
+                DepartmentName = "Finance"
+            },
+            new Department
+            {
+                DepartmentId = 3,
+                DepartmentName = "HR"
+            }
+        );
+
+
+        // ==========================================
+        // SEED LEAVE TYPES
+        // ==========================================
+
+        modelBuilder.Entity<LeaveType>().HasData(
+            new LeaveType
+            {
+                LeaveTypeId = 1,
+                Name = "Casual Leave",
+                Description = "Leave for personal purposes",
+                AllocatedDays = 12,
+                IsPaid = true,
+                IsActive = true
+            },
+            new LeaveType
+            {
+                LeaveTypeId = 2,
+                Name = "Sick Leave",
+                Description = "Leave due to illness",
+                AllocatedDays = 8,
+                IsPaid = true,
+                IsActive = true
+            },
+            new LeaveType
+            {
+                LeaveTypeId = 3,
+                Name = "Earned Leave",
+                Description = "Earned annual leave",
+                AllocatedDays = 15,
+                IsPaid = true,
+                IsActive = true
+            },
+            new LeaveType
+            {
+                LeaveTypeId = 4,
+                Name = "Unpaid Leave",
+                Description = "Leave without pay",
+                AllocatedDays = 0,
+                IsPaid = false,
+                IsActive = true
+            }
+        );
     }
 }
