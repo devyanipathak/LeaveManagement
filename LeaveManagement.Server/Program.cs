@@ -3,6 +3,7 @@ using LeaveManagement.Server.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using LeaveManagement.Server.Services;
 using Microsoft.OpenApi;
 using System.Text;
 
@@ -22,6 +23,8 @@ namespace LeaveManagement.Server
                 options.UseSqlServer(
                     builder.Configuration.GetConnectionString("DefaultConnection")
                 ));
+            //Register our modular leave engine service
+            builder.Services.AddScoped<ILeaveManagementService, LeaveManagementService>();
             //JWT services
             builder.Services.AddScoped<JwtService>();
 
