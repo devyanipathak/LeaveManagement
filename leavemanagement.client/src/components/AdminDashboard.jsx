@@ -7,7 +7,8 @@ export class AdminDashboard extends Component {
 
         this.state = {
             employee: "",
-            manager: ""
+            manager: "",
+            assignments: []
         }
     }
 
@@ -16,11 +17,21 @@ export class AdminDashboard extends Component {
         const employees = ["", "Ankush Mallick", "Ram Sharma", "Shyam Chowdhury"]
 
         const assignEmployee = () => {
-            if (this.state.employee == "" || this.state.manager == "") {
+            if (this.state.employee === "" || this.state.manager === "") {
                 alert("Please select manager and employee");
                 return;
             }
 
+            this.setState({
+                assignments: [...this.state.assignments, {
+                    id: this.state.assignments.length + 1,
+                    manager: this.state.manager,
+                    employee: this.state.employee
+                }],
+                employee: "",
+                manager: ""
+            });
+            return;
         }
 
         return (
@@ -66,22 +77,25 @@ export class AdminDashboard extends Component {
                                     <th className='table-success'>Actions</th>
                                 </tr>
                             </thead>
+
                             <tbody>
-                                <tr>
-                                    <th>1</th>
-                                    <td>Mark</td>
-                                    <td>Otto</td>
-                                    <td>
-                                        <button className="btn btn-warning mx-2">Edit</button>
-                                        <button className="btn btn-danger">Delete</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>2</th>
-                                    <td>Jacob</td>
-                                    <td>Thornton</td>
-                                    <td>@fat</td>
-                                </tr>
+                                {this.state.assignments.map((item, index) => (
+                                    <tr key={index}>
+                                        <td>{item.id}</td>
+                                        <td>{item.manager}</td>
+                                        <td>{item.employee}</td>
+
+                                        <td>
+                                            <button className="btn btn-warning mx-2">
+                                                Edit
+                                            </button>
+
+                                            <button className="btn btn-danger">
+                                                Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
                             </tbody>
                         </table>
                     </div>
