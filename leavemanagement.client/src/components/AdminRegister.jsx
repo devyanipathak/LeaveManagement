@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
 import Footer from './Footer'
 
-export class EmployeeRegister extends Component {
+export class AdminRegister extends Component {
   render() {
     return (
       <>
         <div className="container mt-3">
-          <h1 className='alert alert-success'>Employee Register</h1>
+          <h1 className='alert alert-success'>Admin Register</h1>
           <form>
             <div className='row'>
               <div className='col'>
@@ -20,7 +20,6 @@ export class EmployeeRegister extends Component {
               </div>
             </div>
 
-
             <div className='row mt-3'>
               <div className='col'>
                 <label htmlFor='email' className='form-label'>E-Mail</label>
@@ -33,47 +32,23 @@ export class EmployeeRegister extends Component {
               </div>
             </div>
 
-
-            <div className='row mt-3'>
-              <div className='col'>
-                <label htmlFor='role' className='form-label'>Role</label>
-                <select className="form-select">
-                  <option selected>Select Your Role</option>
-                  <option value="Project Manager">Project Manager</option>
-                  <option value="Application Developer">Application Developer</option>
-                  <option value="Software Engineer">Software Engineer</option>
-                </select>
-              </div>
-
-              <div className='col'>
-                <label htmlFor='department' className='form-label'>Department</label>
-                <select className="form-select">
-                  <option selected>Select Your Department</option>
-                  <option value="Development">Development</option>
-                  <option value="Finance">Finance</option>
-                  <option value="HR">HR</option>
-                </select>
-              </div>
-            </div>
-
-
             <div className='row mt-3'>
               <div className='col'>
                 <input type='reset' className='btn btn-warning' />
-                <input type='submit' className='btn btn-success mx-3' value='Login' />
+                <input type='submit' className='btn btn-success mx-3' value='Register' />
               </div>
             </div>
 
             <div className='row mt-3'>
-              <p>Don't have an account? <a href='employee-register'>Register Now</a></p>
+              <p>Already registered? <a href='admin-login'>Login Now</a></p>
             </div>
           </form>
         </div>
 
-        <Footer />
+        <Footer/>
       </>
     )
   }
 }
 
-export default EmployeeRegister
+export default AdminRegister
