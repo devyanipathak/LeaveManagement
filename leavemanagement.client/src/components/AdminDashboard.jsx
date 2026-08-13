@@ -12,7 +12,6 @@ export class AdminDashboard extends Component {
         }
     }
 
-
     render() {
         const employees = ["", "Ankush Mallick", "Ram Sharma", "Shyam Chowdhury"]
 
