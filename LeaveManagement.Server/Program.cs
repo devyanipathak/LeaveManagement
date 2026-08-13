@@ -1,5 +1,10 @@
 using LeaveManagement.Server.Data;
+using LeaveManagement.Server.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
+using System.Text;
 
 namespace LeaveManagement.Server
 {
@@ -17,10 +22,53 @@ namespace LeaveManagement.Server
                 options.UseSqlServer(
                     builder.Configuration.GetConnectionString("DefaultConnection")
                 ));
+            //JWT services
+            builder.Services.AddScoped<JwtService>();
+
+            //JWT Authentication
+            builder.Services
+                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+
+                        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                        ValidAudience = builder.Configuration["Jwt:Audience"],
+
+                        IssuerSigningKey = new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(
+                                builder.Configuration["Jwt:Key"]!
+                            )
+                        )
+                    };
+                });
 
             // Add Swagger
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            //builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(options =>
+            {
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Enter your JWT token."
+                });
+
+                options.AddSecurityRequirement(document =>
+                    new OpenApiSecurityRequirement
+                    {
+                        [new OpenApiSecuritySchemeReference("Bearer", document)] = []
+                    });
+            });
 
             var app = builder.Build();
 
@@ -32,7 +80,8 @@ namespace LeaveManagement.Server
             }
 
             app.UseHttpsRedirection();
-
+            //JWT
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();
