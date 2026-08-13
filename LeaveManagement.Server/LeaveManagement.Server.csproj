@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <SpaRoot>..\leavemanagement.client</SpaRoot>
     <SpaProxyLaunchCommand>npm run dev</SpaProxyLaunchCommand>
-    <SpaProxyServerUrl>https://localhost:54268</SpaProxyServerUrl>
+    <SpaProxyServerUrl>http://localhost:54268</SpaProxyServerUrl>
   </PropertyGroup>
 
   <ItemGroup>
