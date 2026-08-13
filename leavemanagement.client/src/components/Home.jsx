@@ -27,10 +27,10 @@ export class Home extends Component {
                                 <div className="card h-100 shadow-lg border-success border-4 bg-light p-5 rounded-4">
                                     <div className="card-body d-flex flex-column justify-content-between py-4">
                                         <div>
-                                            <h2 className="card-title text-success display-5 fw-bold mb-4">Manager Dashboard</h2>
+                                            <h2 className="card-title text-success display-5 fw-bold mb-4">Admin Portal</h2>
                                             <p className="text-muted fs-5 mb-4">Manage employee leave requests</p>
                                         </div>
-                                        <a href="manager-login" className='btn btn-outline-success btn-lg py-3 fs-5 fw-semibold'>Go to Manager Dashboard</a>
+                                        <a href="admin-login" className='btn btn-outline-success btn-lg py-3 fs-5 fw-semibold'>Go to Admin Dashboard</a>
                                     </div>
                                 </div>
                             </div>

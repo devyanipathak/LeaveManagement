@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
 import Footer from './Footer'
 
-export class ManagerLogin extends Component {
+export class AdminLogin extends Component {
   render() {
     return (
       <>
         <div className='container mt-3' >
-          <h1 className='alert alert-success'>Manager Login</h1>
+          <h1 className='alert alert-success'>Admin Login</h1>
           <form>
             <div className='row'>
               <div className='col'>
@@ -17,7 +17,7 @@ export class ManagerLogin extends Component {
 
             <div className='row mt-3'>
               <div className='col'>
-                <label htmlFor='apssword' className='form-label'>Password</label>
+                <label htmlFor='password' className='form-label'>Password</label>
                 <input type='text' name='password' className='form-control' placeholder='Enter Your Password' />
               </div>
             </div>
@@ -30,16 +30,15 @@ export class ManagerLogin extends Component {
             </div>
 
             <div className='row mt-3'>
-              <p>Don't have an account? <a href='manager-register'>Register Now</a></p>
+              <p>Don't have an account? <a href='admin-register'>Register Now</a></p>
             </div>
           </form>
         </div >
 
         <Footer/>
       </>
-
     )
   }
 }
 
-export default ManagerLogin
+export default AdminLogin
