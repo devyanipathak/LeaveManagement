@@ -17,7 +17,14 @@ namespace LeaveManagement.Server.Services
         public async Task<bool> SubmitLeaveRequestAsync(int userId, int leaveTypeId, DateTime startDate, DateTime endDate, string reason)
         {
             // Calculate total requested days inclusive of start and end parameters
-            int requestedDays = (endDate.Date - startDate.Date).Days + 1;
+            //int requestedDays = (endDate.Date - startDate.Date).Days + 1;
+            //if (requestedDays <= 0) return false;
+            if (endDate.Date < startDate.Date)
+            {
+                return false;
+            }
+
+            int requestedDays = CountWeekdays(startDate.Date, endDate.Date);
             if (requestedDays <= 0) return false;
 
             // Fetch the user's profile balance matching this specific leave type rule
@@ -48,6 +55,19 @@ namespace LeaveManagement.Server.Services
             return true;
         }
 
+        private static int CountWeekdays(DateTime start, DateTime end)
+         {
+             int count = 0;
+             for (var date = start; date <= end; date = date.AddDays(1))
+             {
+                 if (date.DayOfWeek != DayOfWeek.Saturday &&
+                     date.DayOfWeek != DayOfWeek.Sunday)
+                 {
+                     count++;
+                 }
+             }
+             return count;
+         }
         // 2. Query historical logs for a given user account
         public async Task<IEnumerable<LeaveRequest>> GetEmployeeLeaveHistoryAsync(int userId)
         {
