@@ -6,7 +6,7 @@ export class Home extends Component {
         return (
             <>
                 <div className='container mt-5'>
-                    <h1 className='alert alert-success text-center py-3 fs-2'>Home</h1>
+                    <h1 className='alert alert-success text-center py-3 fs-2'>Leave Management System</h1>
                     <div className="container px-4 my-5">
                         <div className="row g-5">
                             <div className="col-lg-6">
@@ -20,7 +20,6 @@ export class Home extends Component {
                                     </div>
                                 </div>
                             </div>
-
 
 
                             <div className="col-lg-6">

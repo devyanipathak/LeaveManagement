@@ -4,11 +4,11 @@ import apiFetch from '../api'
 import { getSession, clearSession } from '../auth'
 
 const statusBadge = (status) => {
-  switch (status) {
-    case 'Approved': return 'badge bg-success';
-    case 'Rejected': return 'badge bg-danger';
-    default: return 'badge bg-warning text-dark';
-  }
+    switch (status) {
+        case 'Approved': return 'badge bg-success';
+        case 'Rejected': return 'badge bg-danger';
+        default: return 'badge bg-warning text-dark';
+    }
 }
 
 export class AdminDashboard extends Component {
@@ -38,6 +38,12 @@ export class AdminDashboard extends Component {
     }
 
     componentDidMount() {
+        const navigation = performance.getEntriesByType('navigation')[0];
+        if (navigation?.type === 'reload') {
+            clearSession();
+            window.location.href = '/';
+            return;
+        }
         this.loadRequests();
         this.loadUsersAndManagers();
     }

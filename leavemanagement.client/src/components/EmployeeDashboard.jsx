@@ -33,10 +33,6 @@ export class EmployeeDashboard extends Component {
     }
   }
 
-  componentDidMount() {
-    this.loadAll();
-  }
-
   loadAll = async () => {
     const userId = this.session?.userId;
     if (!userId) return;
