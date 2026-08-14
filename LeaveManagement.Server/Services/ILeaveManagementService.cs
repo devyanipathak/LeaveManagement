@@ -7,6 +7,6 @@ namespace LeaveManagement.Server.Services
     {
         Task<bool> SubmitLeaveRequestAsync(int userId, int leaveTypeId, DateTime startDate, DateTime endDate, string reason);
         Task<IEnumerable<LeaveRequest>> GetEmployeeLeaveHistoryAsync(int userId);
-        Task<bool> ProcessLeaveApprovalAsync(int leaveRequestId, string status, int approvedByUserId, string managerComment);
+        Task<bool> ProcessLeaveApprovalAsync(int leaveRequestId, string status, string managerComment);
     }
 }
