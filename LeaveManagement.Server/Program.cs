@@ -51,6 +51,10 @@ namespace LeaveManagement.Server
                     };
                 });
 
+            // Authorization services (backs the [Authorize] attributes
+            // used across the admin and leave-request controllers)
+            builder.Services.AddAuthorization();
+
             // Add Swagger
             builder.Services.AddEndpointsApiExplorer();
             //builder.Services.AddSwaggerGen();
