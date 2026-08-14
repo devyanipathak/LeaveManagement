@@ -59,7 +59,7 @@ namespace LeaveManagement.Server.Services
         }
 
         // 3. Process the validation and adjust UsedDays tracking upon approval
-        public async Task<bool> ProcessLeaveApprovalAsync(int leaveRequestId, string status, int approvedByUserId, string managerComment)
+        public async Task<bool> ProcessLeaveApprovalAsync(int leaveRequestId, string status, string managerComment)
         {
             // Target the model's exact primary key name: LeaveRequestId
             var request = await _context.LeaveRequests
@@ -67,9 +67,11 @@ namespace LeaveManagement.Server.Services
 
             if (request == null || request.Status != "Pending") return false;
 
-            // Apply decision states and update reviewer profiles
+            // Apply decision states and update reviewer profiles.
+            // ApprovedBy is intentionally left untouched: reviews are
+            // performed by an Admin, which is a separate table from
+            // Users, so there is no valid Users.UserId to stamp here.
             request.Status = status; // Expected inputs: "Approved" or "Rejected"
-            request.ApprovedBy = approvedByUserId;
             request.ManagerComment = managerComment;
             request.UpdatedAt = DateTime.UtcNow;
 

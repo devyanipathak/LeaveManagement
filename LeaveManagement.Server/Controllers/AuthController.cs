@@ -108,6 +108,29 @@ public class AuthController : ControllerBase
 
         await _context.SaveChangesAsync();
 
+        // 7b. Seed the new user's leave balances for the current year
+        //     from every active leave type, so they have something to
+        //     apply against right away.
+        var activeLeaveTypes = await _context.LeaveTypes
+            .Where(lt => lt.IsActive)
+            .ToListAsync();
+
+        var currentYear = DateTime.UtcNow.Year;
+
+        foreach (var leaveType in activeLeaveTypes)
+        {
+            _context.LeaveBalances.Add(new LeaveBalance
+            {
+                UserId = user.UserId,
+                LeaveTypeId = leaveType.LeaveTypeId,
+                Year = currentYear,
+                AllocatedDays = leaveType.AllocatedDays,
+                UsedDays = 0
+            });
+        }
+
+        await _context.SaveChangesAsync();
+
         // 8. Return response
         return Ok(new
         {

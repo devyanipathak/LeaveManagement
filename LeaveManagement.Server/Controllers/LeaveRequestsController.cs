@@ -1,7 +1,10 @@
 ﻿
+using LeaveManagement.Server.Data;
 using LeaveManagement.Server.Models;
 using LeaveManagement.Server.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace LeaveManagement.Server.Controllers
 {
@@ -10,11 +13,69 @@ namespace LeaveManagement.Server.Controllers
     public class LeaveRequestsController : ControllerBase
     {
         private readonly ILeaveManagementService _leaveManagementService;
+        private readonly ApplicationDbContext _context;
 
         // Dependency injection brings in the service layout seamlessly
-        public LeaveRequestsController(ILeaveManagementService leaveManagementService)
+        public LeaveRequestsController(
+            ILeaveManagementService leaveManagementService,
+            ApplicationDbContext context)
         {
             _leaveManagementService = leaveManagementService;
+            _context = context;
+        }
+
+        /// <summary>
+        /// GET: api/LeaveRequests/leave-types
+        /// Returns every active leave type, for populating the "apply for
+        /// leave" dropdown.
+        /// </summary>
+        [HttpGet("leave-types")]
+        [Authorize]
+        public async Task<IActionResult> GetLeaveTypes()
+        {
+            var leaveTypes = await _context.LeaveTypes
+                .Where(lt => lt.IsActive)
+                .Select(lt => new
+                {
+                    lt.LeaveTypeId,
+                    lt.Name,
+                    lt.Description,
+                    lt.AllocatedDays,
+                    lt.IsPaid
+                })
+                .ToListAsync();
+
+            return Ok(leaveTypes);
+        }
+
+        /// <summary>
+        /// GET: api/LeaveRequests/balances/{userId}
+        /// Returns the calling employee's leave balances (allocated, used,
+        /// remaining) for the current year, one row per leave type.
+        /// </summary>
+        [HttpGet("balances/{userId}")]
+        [Authorize]
+        public async Task<IActionResult> GetLeaveBalances(int userId)
+        {
+            var currentYear = DateTime.UtcNow.Year;
+
+            var balances = await _context.LeaveBalances
+                .Include(b => b.LeaveType)
+                .Where(b => b.UserId == userId && b.Year == currentYear)
+                .Select(b => new
+                {
+                    b.LeaveBalanceId,
+                    b.LeaveTypeId,
+                    LeaveTypeName = b.LeaveType != null ? b.LeaveType.Name : "Unknown",
+                    IsPaid = b.LeaveType != null && b.LeaveType.IsPaid,
+                    b.Year,
+                    b.AllocatedDays,
+                    b.UsedDays,
+                    b.RemainingDays
+                })
+                .ToListAsync();
+
+            return Ok(balances);
         }
 
         /// <summary>
@@ -22,6 +83,7 @@ namespace LeaveManagement.Server.Controllers
         /// Submits a brand new employee leave request.
         /// </summary>
         [HttpPost("submit")]
+        [Authorize]
         public async Task<IActionResult> SubmitLeaveRequest([FromBody] SubmitLeaveRequestDto dto)
         {
             if (dto == null) return BadRequest("Invalid request payload.");
@@ -47,17 +109,73 @@ namespace LeaveManagement.Server.Controllers
         /// Retrieves the complete historical log of leave requests for a single employee.
         /// </summary>
         [HttpGet("history/{userId}")]
-        public async Task<ActionResult<IEnumerable<LeaveRequest>>> GetEmployeeLeaveHistory(int userId)
+        [Authorize]
+        public async Task<ActionResult<IEnumerable<object>>> GetEmployeeLeaveHistory(int userId)
         {
             var history = await _leaveManagementService.GetEmployeeLeaveHistoryAsync(userId);
-            return Ok(history);
+
+            var result = history.Select(r => new
+            {
+                r.LeaveRequestId,
+                r.LeaveTypeId,
+                LeaveTypeName = r.LeaveType != null ? r.LeaveType.Name : "Unknown",
+                r.StartDate,
+                r.EndDate,
+                r.NumberOfDays,
+                r.Reason,
+                r.Status,
+                r.ManagerComment,
+                r.AppliedAt,
+                r.UpdatedAt
+            });
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// GET: api/LeaveRequests/all
+        /// Admin-only view of every leave request across every employee,
+        /// most recently applied first.
+        /// </summary>
+        [HttpGet("all")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAllRequests()
+        {
+            var requests = await _context.LeaveRequests
+                .Include(r => r.User)
+                    .ThenInclude(u => u!.Department)
+                .Include(r => r.LeaveType)
+                .OrderByDescending(r => r.AppliedAt)
+                .Select(r => new
+                {
+                    r.LeaveRequestId,
+                    r.UserId,
+                    EmployeeName = r.User != null
+                        ? r.User.FirstName + " " + r.User.LastName
+                        : "Unknown",
+                    Department = r.User != null && r.User.Department != null
+                        ? r.User.Department.DepartmentName
+                        : null,
+                    LeaveTypeName = r.LeaveType != null ? r.LeaveType.Name : "Unknown",
+                    r.StartDate,
+                    r.EndDate,
+                    r.NumberOfDays,
+                    r.Reason,
+                    r.Status,
+                    r.ManagerComment,
+                    r.AppliedAt
+                })
+                .ToListAsync();
+
+            return Ok(requests);
         }
 
         /// <summary>
         /// POST: api/LeaveRequests/process-approval
-        /// Allows an authorized manager or admin to approve or reject a pending leave request.
+        /// Allows an admin to approve or reject a pending leave request.
         /// </summary>
         [HttpPost("process-approval")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> ProcessLeaveApproval([FromBody] ProcessLeaveApprovalDto dto)
         {
             if (dto == null) return BadRequest("Invalid request payload.");
@@ -69,10 +187,13 @@ namespace LeaveManagement.Server.Controllers
                 return BadRequest("Invalid status property. Allowed values are 'Approved' or 'Rejected'.");
             }
 
+            // NOTE: the reviewer here is an Admin, which lives in a
+            // separate table from Users, so we deliberately do not try to
+            // stamp an ApprovedBy user id (that column is a foreign key
+            // into Users, and an Admin id would not be a valid match).
             var isProcessed = await _leaveManagementService.ProcessLeaveApprovalAsync(
                 dto.LeaveRequestId,
                 dto.Status,
-                dto.ApprovedByUserId,
                 dto.ManagerComment
             );
 
@@ -100,7 +221,6 @@ namespace LeaveManagement.Server.Controllers
     {
         public int LeaveRequestId { get; set; }
         public string Status { get; set; } = string.Empty; // "Approved" or "Rejected"
-        public int ApprovedByUserId { get; set; }
         public string ManagerComment { get; set; } = string.Empty;
     }
 }
