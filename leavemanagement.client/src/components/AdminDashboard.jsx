@@ -21,15 +21,20 @@ export class AdminDashboard extends Component {
                 return;
             }
 
-            this.setState({
-                assignments: [...this.state.assignments, {
-                    id: this.state.assignments.length + 1,
-                    manager: this.state.manager,
-                    employee: this.state.employee
-                }],
-                employee: "",
-                manager: ""
-            });
+            if (this.state.employee != this.state.manager) {
+                this.setState({
+                    assignments: [...this.state.assignments, {
+                        id: this.state.assignments.length + 1,
+                        manager: this.state.manager,
+                        employee: this.state.employee
+                    }],
+                    employee: "",
+                    manager: ""
+                });
+            } else{
+                alert("Employee and Manager Can't be Same");
+                return;
+            }
             return;
         }
 
