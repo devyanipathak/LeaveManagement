@@ -5,11 +5,11 @@
 const STORAGE_KEY = 'lms_session';
 
 export function saveSession(session) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(session));
 }
 
 export function getSession() {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = sessionStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
 
     try {
@@ -20,7 +20,7 @@ export function getSession() {
 }
 
 export function clearSession() {
-    localStorage.removeItem(STORAGE_KEY);
+    sessionStorage.removeItem(STORAGE_KEY);
 }
 
 export function isLoggedInAs(role) {

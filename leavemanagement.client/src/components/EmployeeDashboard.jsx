@@ -112,6 +112,16 @@ export class EmployeeDashboard extends Component {
     }
   }
 
+  componentDidMount() {
+    const navigation = performance.getEntriesByType('navigation')[0];
+    if (navigation?.type === 'reload') {
+      clearSession();
+      window.location.href = '/';
+      return;
+    }
+    this.loadAll();
+  }
+
   render() {
     const {
       balances, history, leaveTypes, holidays,
