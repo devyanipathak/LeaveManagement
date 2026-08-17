@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import Footer from './Footer'
 import apiFetch from '../api'
+import Swal from 'sweetalert2'
 
 export class EmployeeRegister extends Component {
   constructor() {
@@ -35,6 +36,13 @@ export class EmployeeRegister extends Component {
       this.setState({ roles, departments });
     } catch (err) {
       this.setState({ error: 'Could not load roles/departments. Is the server running?' });
+
+      // Sweet Alert added
+      Swal.fire({
+        icon: 'error',
+        title: 'Unable to Load Data',
+        text: 'Could not load roles/departments. Is the server running?'
+      });
     }
   }
 
@@ -64,16 +72,40 @@ export class EmployeeRegister extends Component {
 
     if (!firstName || !lastName || !email || !password) {
       this.setState({ error: 'Please fill in all required fields.' });
+
+      // Sweet Alert added
+      Swal.fire({
+        icon: 'warning',
+        title: 'Missing Information',
+        text: 'Please fill in all required fields.'
+      });
+
       return;
     }
 
     if (!roleId || !departmentId) {
       this.setState({ error: 'Please select your role and department.' });
+
+      // Sweet Alert added
+      Swal.fire({
+        icon: 'warning',
+        title: 'Selection Required',
+        text: 'Please select your role and department.'
+      });
+
       return;
     }
 
     if (password !== confirmPassword) {
       this.setState({ error: 'Passwords do not match.' });
+
+      // Sweet Alert added
+      Swal.fire({
+        icon: 'warning',
+        title: 'Password Mismatch',
+        text: 'Passwords do not match.'
+      });
+
       return;
     }
 
@@ -98,11 +130,26 @@ export class EmployeeRegister extends Component {
         submitting: false
       });
 
-      setTimeout(() => {
+      // Sweet Alert added
+      Swal.fire({
+        icon: 'success',
+        title: 'Registration Successful!',
+        text: 'You can now log in.',
+        timer: 1500,
+        showConfirmButton: false
+      }).then(() => {
         window.location.href = 'employee-login';
-      }, 1200);
+      });
+
     } catch (err) {
       this.setState({ error: err.message, submitting: false });
+
+      // Sweet Alert added
+      Swal.fire({
+        icon: 'error',
+        title: 'Registration Failed',
+        text: err.message
+      });
     }
   }
 
@@ -138,23 +185,23 @@ export class EmployeeRegister extends Component {
 
             <div className='row mt-3'>
               <div className='col'>
-                <label htmlFor='email' className='form-label'>E-Mail</label>
-                <input type='email' name='email' className='form-control' placeholder='Enter Your E-Mail'
-                  value={email} onChange={this.handleChange('email')} />
-              </div>
-
-              <div className='col'>
                 <label htmlFor='password' className='form-label'>Password</label>
                 <input type='password' name='password' className='form-control' placeholder='Enter Your Password'
                   value={password} onChange={this.handleChange('password')} />
+              </div>
+
+              <div className='col'>
+                <label htmlFor='confirmpassword' className='form-label'>Confirm Password</label>
+                <input type='password' name='confirmpassword' className='form-control' placeholder='Re-enter Your Password'
+                  value={confirmPassword} onChange={this.handleChange('confirmPassword')} />
               </div>
             </div>
 
             <div className='row mt-3'>
               <div className='col'>
-                <label htmlFor='confirmpassword' className='form-label'>Confirm Password</label>
-                <input type='password' name='confirmpassword' className='form-control' placeholder='Re-enter Your Password'
-                  value={confirmPassword} onChange={this.handleChange('confirmPassword')} />
+                <label htmlFor='email' className='form-label'>E-Mail</label>
+                <input type='email' name='email' className='form-control' placeholder='Enter Your E-Mail'
+                  value={email} onChange={this.handleChange('email')} />
               </div>
             </div>
 

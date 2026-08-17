@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import Footer from './Footer'
 import apiFetch from '../api'
+import Swal from 'sweetalert2'
 
 export class AdminRegister extends Component {
   constructor() {
@@ -36,11 +37,27 @@ export class AdminRegister extends Component {
 
     if (!firstName || !lastName || !email || !password) {
       this.setState({ error: 'Please fill in all required fields.' });
+
+      // Sweet Alert added
+      Swal.fire({
+        icon: 'warning',
+        title: 'Missing Information',
+        text: 'Please fill in all required fields.'
+      });
+
       return;
     }
 
     if (password !== confirmPassword) {
       this.setState({ error: 'Passwords do not match.' });
+
+      // Sweet Alert added
+      Swal.fire({
+        icon: 'warning',
+        title: 'Password Mismatch',
+        text: 'Passwords do not match.'
+      });
+
       return;
     }
 
@@ -52,13 +69,31 @@ export class AdminRegister extends Component {
         body: JSON.stringify({ firstName, lastName, email, password, confirmPassword })
       });
 
-      this.setState({ success: 'Registration successful! You can now log in.', submitting: false });
+      this.setState({
+        success: 'Registration successful! You can now log in.',
+        submitting: false
+      });
 
-      setTimeout(() => {
+      // Sweet Alert added
+      Swal.fire({
+        icon: 'success',
+        title: 'Registration Successful!',
+        text: 'You can now log in.',
+        timer: 1500,
+        showConfirmButton: false
+      }).then(() => {
         window.location.href = 'admin-login';
-      }, 1200);
+      });
+
     } catch (err) {
       this.setState({ error: err.message, submitting: false });
+
+      // Sweet Alert added
+      Swal.fire({
+        icon: 'error',
+        title: 'Registration Failed',
+        text: err.message
+      });
     }
   }
 
@@ -90,23 +125,23 @@ export class AdminRegister extends Component {
 
             <div className='row mt-3'>
               <div className='col'>
-                <label htmlFor='email' className='form-label'>E-Mail</label>
-                <input type='email' name='email' className='form-control' placeholder='Enter Your E-Mail'
-                  value={email} onChange={this.handleChange('email')} />
-              </div>
-
-              <div className='col'>
                 <label htmlFor='password' className='form-label'>Password</label>
                 <input type='password' name='password' className='form-control' placeholder='Enter Your Password'
                   value={password} onChange={this.handleChange('password')} />
+              </div>
+
+              <div className='col'>
+                <label htmlFor='confirmpassword' className='form-label'>Confirm Password</label>
+                <input type='password' name='confirmpassword' className='form-control' placeholder='Re-enter Your Password'
+                  value={confirmPassword} onChange={this.handleChange('confirmPassword')} />
               </div>
             </div>
 
             <div className='row mt-3'>
               <div className='col'>
-                <label htmlFor='confirmpassword' className='form-label'>Confirm Password</label>
-                <input type='password' name='confirmpassword' className='form-control' placeholder='Re-enter Your Password'
-                  value={confirmPassword} onChange={this.handleChange('confirmPassword')} />
+                <label htmlFor='email' className='form-label'>E-Mail</label>
+                <input type='email' name='email' className='form-control' placeholder='Enter Your E-Mail'
+                  value={email} onChange={this.handleChange('email')} />
               </div>
             </div>
 
