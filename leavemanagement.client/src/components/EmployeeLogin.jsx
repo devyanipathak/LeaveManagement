@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import Footer from './Footer'
 import apiFetch from '../api'
 import { saveSession } from '../auth'
+import Swal from 'sweetalert2'
 
 export class EmployeeLogin extends Component {
   constructor() {
@@ -29,6 +30,14 @@ export class EmployeeLogin extends Component {
     const { email, password } = this.state;
     if (!email || !password) {
       this.setState({ error: 'Please enter your username and password.' });
+
+      // Sweet Alert added
+      Swal.fire({
+        icon: 'warning',
+        title: 'Missing Information',
+        text: 'Please enter your username and password.'
+      });
+
       return;
     }
 
@@ -50,9 +59,26 @@ export class EmployeeLogin extends Component {
         department: data.department
       });
 
-      window.location.href = 'employee-dashboard';
+      // Sweet Alert added
+      Swal.fire({
+        icon: 'success',
+        title: 'Login Successful!',
+        text: 'Welcome back!',
+        timer: 1500,
+        showConfirmButton: false
+      }).then(() => {
+        window.location.href = 'employee-dashboard';
+      });
+
     } catch (err) {
       this.setState({ error: err.message, submitting: false });
+
+      // Sweet Alert added
+      Swal.fire({
+        icon: 'error',
+        title: 'Login Failed',
+        text: err.message
+      });
     }
   }
 

@@ -156,14 +156,15 @@ export class AdminDashboard extends Component {
                                     {r.status === 'Pending' ? (
                                         <>
                                             <button
-                                                className='btn btn-success btn-sm mx-1'
+                                                className='btn btn-success btn-sm'
                                                 disabled={actioningId === r.leaveRequestId}
                                                 onClick={this.handleDecision(r.leaveRequestId, 'Approved')}
                                             >
                                                 Approve
                                             </button>
+                                            <br/>
                                             <button
-                                                className='btn btn-danger btn-sm'
+                                                className='btn btn-danger btn-sm mt-1'
                                                 disabled={actioningId === r.leaveRequestId}
                                                 onClick={this.handleDecision(r.leaveRequestId, 'Rejected')}
                                             >

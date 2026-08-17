@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import Footer from './Footer'
 import apiFetch from '../api'
 import { getSession, clearSession } from '../auth'
+import Swal from 'sweetalert2'
 
 const statusBadge = (status) => {
   switch (status) {
@@ -50,6 +51,13 @@ export class EmployeeDashboard extends Component {
       this.setState({ balances, history, leaveTypes, holidays, loading: false });
     } catch (err) {
       this.setState({ error: err.message, loading: false });
+
+      // Sweet Alert added
+      Swal.fire({
+        icon: 'error',
+        title: 'Unable to Load Dashboard',
+        text: err.message
+      });
     }
   }
 
@@ -58,8 +66,24 @@ export class EmployeeDashboard extends Component {
   }
 
   handleLogout = () => {
-    clearSession();
-    window.location.href = '/';
+
+    // Sweet Alert added
+    Swal.fire({
+      icon: 'warning',
+      title: 'Are you sure?',
+      text: 'You will be logged out of your account.',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, Logout',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#d33'
+    }).then((result) => {
+
+      if (result.isConfirmed) {
+        clearSession();
+        window.location.href = '/';
+      }
+
+    });
   }
 
   handleApply = async (e) => {
@@ -71,11 +95,27 @@ export class EmployeeDashboard extends Component {
 
     if (!leaveTypeId || !startDate || !endDate) {
       this.setState({ formError: 'Please select a leave type and both dates.' });
+
+      // Sweet Alert added
+      Swal.fire({
+        icon: 'warning',
+        title: 'Missing Information',
+        text: 'Please select a leave type and both dates.'
+      });
+
       return;
     }
 
     if (new Date(endDate) < new Date(startDate)) {
       this.setState({ formError: 'End date cannot be before the start date.' });
+
+      // Sweet Alert added
+      Swal.fire({
+        icon: 'warning',
+        title: 'Invalid Dates',
+        text: 'End date cannot be before the start date.'
+      });
+
       return;
     }
 
@@ -102,9 +142,26 @@ export class EmployeeDashboard extends Component {
         submitting: false
       });
 
+      // Sweet Alert added
+      Swal.fire({
+        icon: 'success',
+        title: 'Leave Applied Successfully!',
+        text: 'Your leave request has been submitted and is pending review.',
+        timer: 1800,
+        showConfirmButton: false
+      });
+
       this.loadAll();
+
     } catch (err) {
       this.setState({ formError: err.message, submitting: false });
+
+      // Sweet Alert added
+      Swal.fire({
+        icon: 'error',
+        title: 'Leave Application Failed',
+        text: err.message
+      });
     }
   }
 
