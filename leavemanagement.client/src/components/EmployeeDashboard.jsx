@@ -274,7 +274,7 @@ export class EmployeeDashboard extends Component {
                     <th>Days</th>
                     <th>Reason</th>
                     <th>Status</th>
-                    <th>Manager Comment</th>
+                    <th>Admin Comment</th>
                   </tr>
                 </thead>
                 <tbody>
